@@ -7,7 +7,7 @@ import "fmt"
 // 自上而下堆化，用于建堆和删除元素
 func down(heap *[]int, i int) {
 	smallest := i
-	lChild, rChild := 2*i+1, 2*i+2
+	lChild, rChild := i << 1 + 1, i << 1 + 2
 	if lChild < len(*heap) && (*heap)[lChild] < (*heap)[smallest] {
 		smallest = lChild
 	}
@@ -23,7 +23,7 @@ func down(heap *[]int, i int) {
 
 // 自下而上堆化，用于插入元素
 func up(heap *[]int, i int) {
-	parent := (i-1) / 2
+	parent := (i-1) >> 1
 	if parent >= 0 && (*heap)[parent] > (*heap)[i] {
 		(*heap)[parent], (*heap)[i] = (*heap)[i], (*heap)[parent]
 		up(heap, parent)
