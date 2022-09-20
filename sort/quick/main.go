@@ -23,10 +23,10 @@ func main() {
 }
 
 func quickSort(arr []int) {
-	quick(arr, 0, len(arr)-1)
+	partition(arr, 0, len(arr)-1)
 }
 
-func quick(arr []int, left, right int) {
+func partition(arr []int, left, right int) {
 	if left >= right { return }
 	pivot := left
 	idx := pivot + 1	// 存放最后一个比arr[pivot]小的元素的下标
@@ -38,6 +38,6 @@ func quick(arr []int, left, right int) {
 	}
 	arr[pivot], arr[idx-1] = arr[idx-1], arr[pivot]
 	fmt.Println("pivot:", arr[idx-1], arr)
-	quick(arr, pivot, idx-1)
-	quick(arr, idx, right)
+	partition(arr, pivot, idx-2)
+	partition(arr, idx, right)
 }
