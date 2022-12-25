@@ -6,12 +6,14 @@ import "fmt"
 type MyHeap struct {
     heap []int
     less bool
+	cap  int
 }
 
-func NewMyHeap(less bool) MyHeap {
+func NewMyHeap(less bool, cap int) MyHeap {
     return MyHeap {
         heap: []int{},
         less: less,
+		cap:  cap,
     }
 }
 
@@ -77,6 +79,13 @@ func (h *MyHeap) Pop() int {
 
 // 插入一个元素到最后，再向上堆化
 func (h *MyHeap) Insert(num int) {
+	if h.Len() == h.cap {
+		if h.comp(num, h.heap[0]) {
+			return
+		} else {
+			h.Pop()
+		}
+	}
 	h.heap = append(h.heap, num)
 	n := h.Len()
 	h.up(n-1)
@@ -88,7 +97,7 @@ func heapRealize() {
 	fmt.Println("arr: ", arr)
 
 	// 小顶堆
-	heap := NewMyHeap(true)
+	heap := NewMyHeap(true, len(arr))
 	// // 大顶堆
 	// heap := NewMyHeap(false)
 

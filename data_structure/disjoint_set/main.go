@@ -50,5 +50,7 @@ func countSet(edges [][]int, n int) int {
 	for _, edge := range edges {
 		uf.union(edge[0], edge[1])
 	}
+	fmt.Println(uf.parent)
+	fmt.Println(uf.size)
 	return uf.setCount
 }
