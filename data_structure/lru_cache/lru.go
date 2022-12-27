@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"strconv"
 	"strings"
 )
@@ -22,33 +23,32 @@ type NodeList struct {
 }
 
 func NewNodeList(arr []int) *NodeList {
-	if len(arr) == 0 {
-		return &NodeList{Len: 0}
-	}
-	dummy := NewNode(-1)
-	prev := dummy
-	var node *Node
+	dummyHead := NewNode(-1)
+	dummyTail := NewNode(-1)
+	prev := dummyHead
+	node := dummyHead
 	for _, val := range arr {
 		node = NewNode(val)
 		prev.Next = node
 		node.Prev = prev
-		prev = node
+		prev = prev.Next
 	}
-
+	node.Next = dummyTail
+	dummyTail.Prev = node
 	return &NodeList{
-		Head: dummy.Next,
-		Tail: node,
-		Len:  len(arr),
+		Head: dummyHead,
+		Tail: dummyTail,
+		Len: len(arr),
 	}
 }
 
 func (nl *NodeList) String() string {
-	head := nl.Head
+	node := nl.Head.Next
 	var sb strings.Builder
-	for i := 0; i < nl.Len; i++ {
-		sb.WriteString(strconv.Itoa(head.Val))
-		head = head.Next
-		if i == nl.Len - 1 {break}
+	for node != nl.Tail {
+		sb.WriteString(strconv.Itoa(node.Val))
+		node = node.Next
+		if node == nl.Tail {break}
 		sb.WriteString("->")
 	}
 	sb.WriteString(" len:")
@@ -59,48 +59,33 @@ func (nl *NodeList) String() string {
 // 插入到链表头
 func (nl *NodeList) Insert(val int) *Node {
 	node := NewNode(val)
-	if nl.Len == 0 {
-		nl.Head = node
-		nl.Tail = node
-	} else {
-		node.Next = nl.Head
-		nl.Head.Prev = node
-		nl.Head = node
-	}
-	nl.Len++
+	next := nl.Head.Next
+	nl.Head.Next = node
+	node.Prev = nl.Head
+	node.Next = next
+	next.Prev = node
+	nl.Len ++
 	return node
 }
 
 func (nl *NodeList) Evict() int {
-	res := nl.Tail
-	if nl.Len == 1 {
-		nl.Head = nil
-		nl.Tail = nil
-	} else {
-		nl.Tail = nl.Tail.Prev
-		nl.Tail.Next = nil
+	if nl.Len == 0 {
+		return math.MaxInt
 	}
-	res.Prev = nil
-	nl.Len--
+	res := nl.Tail.Prev
+	res.Prev.Next = nl.Tail
+	nl.Tail.Prev = res.Prev
+	nl.Len --
 	return res.Val
 }
 
 func (nl *NodeList) Reinsert(node *Node) *Node {
-	if node.Prev == nil {
-		// 说明该节点本来就是head
-		return node
-	}
 	node.Prev.Next = node.Next
-	if node.Next == nil {
-		// 该节点为尾节点
-		nl.Tail = node.Prev
-	} else {
-		node.Next.Prev = node.Prev
-	}
-	node.Prev = nil
-	node.Next = nl.Head
-	nl.Head.Prev = node
-	nl.Head = node
+	node.Next.Prev = node.Prev
+	node.Prev = nl.Head
+	node.Next = nl.Head.Next
+	nl.Head.Next = node
+	node.Next.Prev = node
 	return node
 }
 
